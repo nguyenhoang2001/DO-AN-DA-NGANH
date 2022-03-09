@@ -1,17 +1,38 @@
 import serial.tools.list_ports
 import time
 import sys
-
+import firebase_admin
 from Adafruit_IO.mqtt_client import MQTTClient
 
-AIO_FEED_IDS = "bbc-led"
+from firebase_admin import credentials, db
+
+cred = credentials.Certificate("smarthome-comeherebae-firebase-key.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': "https://smarthome-comeherebae-default-rtdb.firebaseio.com/"
+})
+
+temp = db.reference('/')
+
+temp.set({
+    'temperature': {
+        'value': 24,
+        'name': 'smart home'
+    },
+    'pump':
+        {
+            'state': 0
+        }
+
+})
+
+AIO_FEED_ID = "bbc-pump"
 AIO_USERNAME = "nguyenhoang1442001"
-AIO_KEY = "aio_aqRy94UfaTZRIXc4RFvDdz3oRhoS"
+AIO_KEY = "aio_qeiz49WRoSN1DE3TDUHxU3fXWAaZ"
 
 
 def connected(client):
     print("Successful connected...")
-    client.subscribe(AIO_FEED_IDS)
+    client.subscribe(AIO_FEED_ID)
 
 
 def subscribe(client, userdata, mid, granted_qos):
@@ -56,17 +77,37 @@ if getPort() != "None":
     ser = serial.Serial(port=getPort(), baudrate=115200)
     isMicrobitConnected = True
 
+temp = db.reference("temperature")
+pump = db.reference("pump")
+
 
 def processData(data):
     data = data.replace("!", "")
     data = data.replace("#", "")
     splitData = data.split(":")
-    print(splitData)
+    # print(splitData)
     try:
-        if splitData[1] == "TEMP":
-            client.publish("bbc-temp", splitData[2])
+        # if splitData[1] == "TEMP":
+        #     client.publish("bbc-temp", splitData[2])
+        #     temp.update({
+        #         "value": splitData[2]
+        #     })
+        if splitData[2] > 27:
+            # ser.write((str(1) + "#").encode())
+            print("i>27", splitData[2])
+            pump.update({
+                "state": 100
+            })
+        else:
+
+            # ser.write((str(0) + "#").encode())
+            print("i<27", splitData[2])
+            pump.update({
+                "state": 0
+            })
     except:
         pass
+
 
 mess = ""
 
@@ -89,4 +130,4 @@ def readSerial():
 while True:
     if isMicrobitConnected:
         readSerial()
-    time.sleep(1)
+    time.sleep(0.5)
