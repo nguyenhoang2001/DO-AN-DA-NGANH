@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "248113166726",
+    "firebase_url": "https://smarthome-comeherebae-default-rtdb.firebaseio.com",
+    "project_id": "smarthome-comeherebae",
+    "storage_bucket": "smarthome-comeherebae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248113166726:android:4cf0c78c62e4e0c3649407",
+        "android_client_info": {
+          "package_name": "com.comherebae.smarthome.smarthome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "248113166726-egkdmre2se90iq1pne0pnb79c299g7bv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOwIGiFBQG8RxSWuE4ckqSM_FvGbmy4qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "248113166726-egkdmre2se90iq1pne0pnb79c299g7bv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
