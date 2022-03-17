@@ -1,10 +1,15 @@
 import serial.tools.list_ports
 import time
-import sys
 import firebase_admin
-from Adafruit_IO.mqtt_client import MQTTClient
-
+from datetime import datetime
 from firebase_admin import credentials, db
+
+
+# datetime object containing current date and time
+now = datetime.now()
+# dd/mm/YY H:M:S
+dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+
 
 cred = credentials.Certificate("smarthome-comeherebae-firebase-key.json")
 firebase_admin.initialize_app(cred, {
@@ -16,7 +21,8 @@ temp = db.reference('/')
 temp.set({
     'temperature': {
         'value': 24,
-        'name': 'smart home'
+        'name': 'smart home',
+        'date and time': '25/06/2021 07:58:56'
     },
     'pump':
         {
@@ -24,40 +30,6 @@ temp.set({
         }
 
 })
-
-AIO_FEED_ID = "bbc-pump"
-AIO_USERNAME = "nguyenhoang1442001"
-AIO_KEY = "aio_qeiz49WRoSN1DE3TDUHxU3fXWAaZ"
-
-
-def connected(client):
-    print("Successful connected...")
-    client.subscribe(AIO_FEED_ID)
-
-
-def subscribe(client, userdata, mid, granted_qos):
-    print("Successful connected...")
-
-
-def disconnected(client):
-    print("Cut the connection")
-    sys.exit(1)
-
-
-def message(client, feed_id, payload):
-    print("Receive the data: " + payload)
-    if isMicrobitConnected:
-        ser.write((str(payload) + "#").encode())
-
-
-client = MQTTClient(AIO_USERNAME, AIO_KEY)
-client.on_connect = connected
-client.on_disconnect = disconnected
-client.on_message = message
-client.on_subscribe = subscribe
-client.connect()
-client.loop_background()
-
 
 def getPort():
     ports = serial.tools.list_ports.comports()
@@ -85,28 +57,29 @@ def processData(data):
     data = data.replace("!", "")
     data = data.replace("#", "")
     splitData = data.split(":")
-    # print(splitData)
+    print(splitData)
     try:
-        # if splitData[1] == "TEMP":
-        #     client.publish("bbc-temp", splitData[2])
-        #     temp.update({
-        #         "value": splitData[2]
-        #     })
-        if splitData[2] > 27:
-            # ser.write((str(1) + "#").encode())
-            print("i>27", splitData[2])
-            pump.update({
-                "state": 100
+        if splitData[1] == "TEMP":
+            temp.update({
+                "value": splitData[2],
+                "date and time": dt_string
             })
+            # if int(splitData[2]) > 20:
+            #     pump.update({
+            #         "state": 1
+            #     })
+            data = pump.get()
+            ser.write((str(data["state"]) + "#").encode())
+            # else:
+            #     pump.update({
+            #         "state": 0
+            #     })
+            #     data = pump.get()
+            #     ser.write((str(data["state"])+"#").encode())
         else:
-
-            # ser.write((str(0) + "#").encode())
-            print("i<27", splitData[2])
-            pump.update({
-                "state": 0
-            })
-    except:
-        pass
+            print("Undefined State")
+    except Exception as e:
+        print(e)
 
 
 mess = ""
