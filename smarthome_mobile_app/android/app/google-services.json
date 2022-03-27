@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "234916072663",
+    "project_id": "authentication-databse",
+    "storage_bucket": "authentication-databse.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234916072663:android:1afe4a7fc86f702aef3492",
+        "android_client_info": {
+          "package_name": "com.example.smarthome_mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "234916072663-7qsh1fb326lbu0s3le3h9fuc764blaos.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCakOPvj_WRf3UFgifqlPMQhxBjV9KkvUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "234916072663-7qsh1fb326lbu0s3le3h9fuc764blaos.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
