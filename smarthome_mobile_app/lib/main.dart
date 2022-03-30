@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:smarthome_mobile_app/ui/provider/google_sign_in.dart';
 import 'package:smarthome_mobile_app/ui/screens/home.dart';
+import 'package:smarthome_mobile_app/utils/utils.dart';
 import 'theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -17,11 +20,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'Smart Home',
-      theme: theme,
-      home: const HomeScreen(),
+    return ChangeNotifierProvider(
+      create: (context) => GoogleSignInProvider(),
+      child: MaterialApp(
+        scaffoldMessengerKey: messengerKey,
+        navigatorKey: navigatorKey,
+        title: 'Smart Home',
+        theme: theme,
+        home: const HomeScreen(),
+      ),
     );
   }
 }

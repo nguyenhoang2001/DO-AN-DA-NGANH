@@ -1,12 +1,20 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:smarthome_mobile_app/main.dart';
 import 'package:smarthome_mobile_app/theme.dart';
+import 'package:smarthome_mobile_app/ui/provider/google_sign_in.dart';
+import 'package:smarthome_mobile_app/ui/screens/reset_password_screen.dart';
+import 'package:smarthome_mobile_app/utils/utils.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
-
+  const Login({Key? key, required this.onClickedSignUp}) : super(key: key);
+  final VoidCallback onClickedSignUp;
   @override
   _LoginState createState() => _LoginState();
 }
@@ -15,22 +23,14 @@ class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  bool _emailCheck = false;
-  bool _passworkCheck = false;
-  late FocusNode _emailFocusNode;
-  late FocusNode _passwordFocusNode;
-  @override
-  void initState() {
-    _passwordFocusNode = FocusNode();
-    _emailFocusNode = FocusNode();
-  }
+  bool _hasError = false;
+  FocusNode myFocusNode = FocusNode();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -47,6 +47,12 @@ class _LoginState extends State<Login> {
           ),
         ),
         child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Smart Home",
+              style: Theme.of(context).textTheme.headline2,
+            ),
+          ),
           backgroundColor: Colors.transparent,
           body: Stack(
             children: [
@@ -58,7 +64,7 @@ class _LoginState extends State<Login> {
                       top: 60.0,
                     ),
                     child: const Text(
-                      'Login',
+                      'Sign In',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white,
@@ -71,20 +77,38 @@ class _LoginState extends State<Login> {
               SingleChildScrollView(
                 child: Container(
                   padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.5,
+                    top: MediaQuery.of(context).size.height * 0.4,
                     left: 35,
                     right: 35,
                   ),
-                  child: Column(
-                    children: [
-                      buildEmailField(_emailController),
-                      const SizedBox(height: 30.0),
-                      buildPasswordField(_passwordController),
-                      const SizedBox(height: 30.0),
-                      buildButton(),
-                      const SizedBox(height: 30.0),
-                      buildOptions(context),
-                    ],
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.blue,
+                              onPrimary: Colors.white,
+                              minimumSize: const Size(double.infinity, 50),
+                            ),
+                            onPressed: () {
+                              Provider.of<GoogleSignInProvider>(context,
+                                      listen: false)
+                                  .googleLogin();
+                            },
+                            icon: const FaIcon(FontAwesomeIcons.google,
+                                color: Colors.red),
+                            label: const Text('Sign in with Google')),
+                        const SizedBox(height: 30),
+                        buildEmailField(_emailController),
+                        const SizedBox(height: 30.0),
+                        buildPasswordField(_passwordController),
+                        const SizedBox(height: 30.0),
+                        buildButton(),
+                        const SizedBox(height: 20.0),
+                        buildOptions(context),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -101,13 +125,26 @@ class _LoginState extends State<Login> {
       children: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            maximumSize: const Size(double.infinity, 90.0),
-            minimumSize: Size(MediaQuery.of(context).size.width * 0.5, 60.0),
+            maximumSize: const Size(170.0, 90.0),
+            minimumSize: const Size(170.0, 60.0),
             primary: Colors.black,
             shape: const StadiumBorder(),
           ),
           onPressed: signIn,
-          child: const Text('Login'),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Text(
+                'LOGIN',
+                style: TextStyle(decoration: TextDecoration.none),
+              ),
+              Icon(
+                Icons.content_paste_rounded,
+                color: Colors.white,
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -117,24 +154,22 @@ class _LoginState extends State<Login> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TextButton(
-          onPressed: () {
-            Navigator.pushNamed(context, 'register');
-          },
-          child: const Text(
-            'Register',
-            style: TextStyle(color: Colors.black),
+        RichText(
+          text: TextSpan(
+            text: 'Sign Up',
+            style: ThermometerTheme.lightTextTheme.bodyText1,
+            recognizer: TapGestureRecognizer()..onTap = widget.onClickedSignUp,
           ),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.pushNamed(context, 'forgot');
-          },
-          child: const Text(
-            'Forgot password?',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
+            onPressed: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const ResetPassword();
+                })),
+            child: Text(
+              'Forgot password',
+              style: ThermometerTheme.lightTextTheme.bodyText1,
+            ))
       ],
     );
   }
@@ -146,9 +181,11 @@ class _LoginState extends State<Login> {
           return 'Please enter the password';
         } else if (value.length <= 6) {
           return 'Password must be greator than 6 digits';
+        } else {
+          return null;
         }
       },
-      focusNode: _passwordFocusNode,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: true,
       style: ThermometerTheme.lightTextTheme.bodyText1,
       controller: passwordController,
@@ -156,7 +193,9 @@ class _LoginState extends State<Login> {
         labelText: 'Password',
         hintStyle: const TextStyle(color: Colors.grey),
         labelStyle: const TextStyle(color: Colors.grey),
-        errorText: _passworkCheck ? 'Wrong Password!' : null,
+        floatingLabelStyle: _hasError
+            ? const TextStyle(color: Colors.red)
+            : const TextStyle(color: Colors.blue),
         fillColor: Colors.grey.shade200,
         filled: true,
         // hintText: 'Password',
@@ -168,27 +207,42 @@ class _LoginState extends State<Login> {
   }
 
   Widget buildEmailField(TextEditingController emailController) {
-    return TextField(
+    return TextFormField(
+      focusNode: myFocusNode,
       controller: emailController,
-      focusNode: _emailFocusNode,
-      style: ThermometerTheme.lightTextTheme.bodyText1,
-      cursorColor: Colors.blue[300],
+      style: GoogleFonts.openSans(
+          fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black),
+      cursorColor: Colors.blue,
       decoration: InputDecoration(
         hintText: 'abc@example.com',
         hintStyle: const TextStyle(color: Colors.grey),
         labelText: 'Email',
         labelStyle: const TextStyle(color: Colors.grey),
+        floatingLabelStyle: _hasError
+            ? const TextStyle(color: Colors.red)
+            : const TextStyle(color: Colors.blue),
         fillColor: Colors.grey.shade200,
         filled: true,
-        errorText: _emailCheck ? 'Email is not correct!' : null,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.black)),
       ),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (email) => email != null && !EmailValidator.validate(email)
+          ? 'Please input a correct email!'
+          : null,
     );
   }
 
   Future signIn() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      setState(() {
+        _hasError = true;
+      });
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -201,19 +255,7 @@ class _LoginState extends State<Login> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim());
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        setState(() {
-          _emailCheck = true; //loginfail is bool
-          _passworkCheck = false;
-        });
-        _emailFocusNode.requestFocus();
-      } else {
-        setState(() {
-          _passworkCheck = true;
-          _emailCheck = false; //
-        });
-        _passwordFocusNode.requestFocus();
-      }
+      Utils.ShowSnackBar(e.code);
     }
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
