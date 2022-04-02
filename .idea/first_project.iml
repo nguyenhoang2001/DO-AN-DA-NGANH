@@ -6,6 +6,9 @@
       <excludeFolder url="file://$MODULE_DIR$/smarthome_mobile_app/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/smarthome_mobile_app/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/smarthome_mobile_app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/smarthome/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/smarthome/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/smarthome/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
