@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:smarthome/util/constant.dart';
 
 class TemperatureWidget extends StatefulWidget {
   const TemperatureWidget({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
   var _temperature;
   var _dateTime;
   var _pumpTurnedOn = false;
+  late bool _userControl = false;
 
   @override
   void initState() {
@@ -46,6 +48,27 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
     dbRef.child("pump").update({"state": 0});
   }
 
+  MaterialColor _chooseColor() {
+    _temperature = _temperature;
+    if (_temperature > 0 && _temperature <= temper1) {
+      return Colors.blue;
+    } else if (_temperature > temper1 && _temperature <= temper2) {
+      return Colors.amber;
+    } else {
+      return Colors.red;
+    }
+  }
+
+  String _chooseLabel() {
+    if (_temperature > 0 && _temperature <= temper1) {
+      return "Safe";
+    } else if (_temperature > temper1 && _temperature <= temper2) {
+      return "Warning";
+    } else {
+      return "Dangerous";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -65,7 +88,8 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
               children: [
                 const SizedBox(height: 24),
                 Card(
-                    elevation: 20,
+                    elevation: 10,
+                    shadowColor: _chooseColor(),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(150),
                     ),
@@ -79,18 +103,14 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
                         ),
                         width: 200,
                         height: 200,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                             // The child of a round Card should be in round shape
                             shape: BoxShape.circle,
-                            color: Colors.blue))),
-                // const SizedBox(height: 24),
-                // TextButton(
-                //     onPressed: _getTemperatureValue, child: Text("Reset")),
-                // const SizedBox(height: 24),
-                // TextButton(onPressed: _turnOnPump, child: Text("Turn on pump")),
-                // const SizedBox(height: 24),
-                // TextButton(
-                //     onPressed: _turnOffPump, child: Text("Turn off pump"))
+                            color: _chooseColor()))),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(_chooseLabel(), style: TextStyle(color: _chooseColor())),
                 Padding(
                   padding: const EdgeInsets.all(48),
                   child: Row(
@@ -110,10 +130,46 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
                         ],
                       ),
                       CupertinoSwitch(
-                          value: _pumpTurnedOn,
+                          value: _userControl ? _pumpTurnedOn : false,
+                          onChanged: (value) {
+                            if (_userControl) {
+                              setState(() {
+                                _pumpTurnedOn = value;
+                                if (_pumpTurnedOn) {
+                                  _turnOnPump();
+                                } else {
+                                  _turnOffPump();
+                                }
+                              });
+                            }
+                          })
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: const [
+                          Text(
+                            "User control",
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ],
+                      ),
+                      CupertinoSwitch(
+                          value: _userControl,
                           onChanged: (value) {
                             setState(() {
-                              _pumpTurnedOn = value;
+                              _userControl = value;
+                              _pumpTurnedOn = _userControl;
+                              if (_pumpTurnedOn) {
+                                _turnOnPump();
+                              } else {
+                                _turnOffPump();
+                              }
                             });
                           })
                     ],
