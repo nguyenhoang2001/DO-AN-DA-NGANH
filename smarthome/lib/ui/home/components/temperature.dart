@@ -48,8 +48,17 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
     dbRef.child("pump").update({"state": 0});
   }
 
+  void _updateUserControl(bool state) {
+    final int updateState;
+    if (state) {
+      updateState = 1;
+    } else {
+      updateState = 0;
+    }
+    dbRef.child("user").update({"userControl": updateState});
+  }
+
   MaterialColor _chooseColor() {
-    _temperature = _temperature;
     if (_temperature > 0 && _temperature <= temper1) {
       return Colors.blue;
     } else if (_temperature > temper1 && _temperature <= temper2) {
@@ -165,6 +174,7 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
                           onChanged: (value) {
                             setState(() {
                               _userControl = value;
+                              _updateUserControl(_userControl);
                               _pumpTurnedOn = _userControl;
                               if (_pumpTurnedOn) {
                                 _turnOnPump();
