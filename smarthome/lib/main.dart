@@ -1,24 +1,35 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:smarthome/ui/home/home.dart';
+import 'package:provider/provider.dart';
+import 'ui/provider/google_sign_in.dart';
+import 'ui/screens/home.dart';
+import 'utils/utils.dart';
+import 'theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
 }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+  ThemeData theme = ThermometerTheme.dark();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ChangeNotifierProvider(
+      create: (context) => GoogleSignInProvider(),
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const HomeScreen());
+        scaffoldMessengerKey: messengerKey,
+        navigatorKey: navigatorKey,
+        title: 'Smart Home',
+        theme: theme,
+        home: const HomeScreen(),
+      ),
+    );
   }
 }

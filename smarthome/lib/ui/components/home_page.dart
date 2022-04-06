@@ -1,16 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:smarthome/ui/home/components/temperature.dart';
+import 'package:smarthome/ui/provider/google_sign_in.dart';
+import './temperature.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class SmartHome extends StatefulWidget {
+  const SmartHome({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<SmartHome> createState() => _SmartHomeState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _SmartHomeState extends State<SmartHome> {
   @override
   void initState() {
     _portraitModeOnly();
@@ -25,6 +27,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(onPressed: () => Provider.of<GoogleSignInProvider>(context, listen: false).logout(), icon: const Icon(Icons.logout))
+        ],
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -32,10 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("Smart Home"),
       ),
       body: Container(
-          child: Center(
-              child: Column(
-        children: const [TemperatureWidget()],
-      ))),
+          child: TemperatureWidget()
+               ),
     );
   }
 
