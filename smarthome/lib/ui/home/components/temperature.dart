@@ -72,11 +72,12 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue[50],
+      height: MediaQuery.of(context).size.height - 90,
+      color: _chooseColor().withOpacity(0.2),
       padding: const EdgeInsets.all(16),
       child: Column(children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height - 200,
+          height: MediaQuery.of(context).size.height - 150,
           width: MediaQuery.of(context).size.width,
           child: Card(
             elevation: 0,
@@ -179,11 +180,11 @@ class _TemperatureWidgetState extends State<TemperatureWidget> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        Text(
-          "$_dateTime",
-          style: const TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
-        ),
+        // const SizedBox(height: 16),
+        // Text(
+        //   "$_dateTime",
+        //   style: const TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+        // ),
       ]),
     );
   }
