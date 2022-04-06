@@ -18,18 +18,18 @@ firebase_admin.initialize_app(cred, {
 
 temp = db.reference('/')
 
-temp.set({
-    'temperature': {
-        'value': 24,
-        'name': 'smart home',
-        'date and time': '25/06/2021 07:58:56'
-    },
-    'pump':
-        {
-            'state': 0
-        }
-
-})
+# temp.set({
+#     'temperature': {
+#         'value': 24,
+#         'name': 'smart home',
+#         'date and time': '25/06/2021 07:58:56'
+#     },
+#     'pump':
+#         {
+#             'state': 0
+#         }
+#
+# })
 
 def getPort():
     ports = serial.tools.list_ports.comports()
@@ -51,7 +51,8 @@ if getPort() != "None":
 
 temp = db.reference("temperature")
 pump = db.reference("pump")
-
+user = db.reference("user")
+fire = db.reference("fire")
 
 def processData(data):
     data = data.replace("!", "")
@@ -61,21 +62,25 @@ def processData(data):
     try:
         if splitData[1] == "TEMP":
             temp.update({
-                "value": splitData[2],
+                "value": int(splitData[2]),
                 "date and time": dt_string
             })
-            # if int(splitData[2]) > 20:
-            #     pump.update({
-            #         "state": 1
-            #     })
-            data = pump.get()
-            ser.write((str(data["state"]) + "#").encode())
-            # else:
-            #     pump.update({
-            #         "state": 0
-            #     })
-            #     data = pump.get()
-            #     ser.write((str(data["state"])+"#").encode())
+            data_user = user.get()
+            data_fire = fire.get()
+            if data_user["userControl"] == 0:
+                if int(splitData[2]) > 36 or data_fire["state"] == 1:
+                    pump.update({
+                        "state": 1
+                    })
+                    ser.write("1#".encode())
+                else:
+                    pump.update({
+                        "state": 0
+                    })
+                    ser.write("0#".encode())
+            else:
+                data = pump.get()
+                ser.write((str(data["state"]) + "#").encode())
         else:
             print("Undefined State")
     except Exception as e:
