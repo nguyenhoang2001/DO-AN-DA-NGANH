@@ -47,12 +47,12 @@ class _LoginState extends State<Login> {
           ),
         ),
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Smart Home",
-              style: Theme.of(context).textTheme.headline2,
-            ),
-          ),
+          // appBar: AppBar(
+          //   title: Text(
+          //     "Smart Home",
+          //     style: Theme.of(context).textTheme.headline2,
+          //   ),
+          // ),
           backgroundColor: Colors.transparent,
           body: Stack(
             children: [

@@ -42,30 +42,33 @@ class _RegisterState extends State<Register> {
           ),
         ),
         child: Scaffold(
-          appBar: AppBar(
-              elevation: null,
-              backgroundColor: Colors.transparent,
-              leading: TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, 'login');
-                },
-                child: const Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: Colors.white,
-                ),
-              )),
+          // appBar: AppBar(
+          //     elevation: null,
+          //     backgroundColor: Colors.transparent,
+          //     leading: TextButton(
+          //       onPressed: () {
+          //         Navigator.pushNamed(context, 'login');
+          //       },
+          //       child: const Icon(
+          //         Icons.arrow_back_ios_rounded,
+          //         color: Colors.white,
+          //       ),
+          //     )),
           backgroundColor: Colors.transparent,
           body: Stack(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    'REGISTER\n NOW',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 40.0,
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(top: 60),
+                    child: const Text(
+                      'REGISTER\n NOW',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40.0,
+                      ),
                     ),
                   ),
                 ],
