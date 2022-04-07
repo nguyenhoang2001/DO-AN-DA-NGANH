@@ -2,42 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/providers.dart';
 import '../models/models.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../screens/screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key, required this.customer}) : super(key: key);
-  Customer customer;
-  static MaterialPage page(Customer user) {
+  ProfileScreen({Key? key, required this.darkmode}) : super(key: key);
+  static MaterialPage page(bool darkmode) {
     return MaterialPage(
-        name: ThermometerPage.profilePath,
-        key: ValueKey(ThermometerPage.profilePath),
-        child: ProfileScreen(customer: user));
+      name: ThermometerPage.profilePath,
+      key: ValueKey(ThermometerPage.profilePath),
+      child: ProfileScreen(darkmode: darkmode),
+    );
   }
+
+  bool darkmode;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  var user = FirebaseAuth.instance.currentUser;
+  @override
+  void dispose() {
+    user = null;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile', style: Theme.of(context).textTheme.headline2),
-        leading: IconButton(
-            onPressed: () =>
-                Provider.of<GoogleSignInProvider>(context, listen: false)
-                    .tapOnProfile(false),
-            icon: const Icon(Icons.arrow_back)),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 16),
-          buildProfile(),
-          Expanded(child: buildMenu()),
-        ],
-      ),
-    );
+    return user == null
+        ? const AuthPage()
+        : Scaffold(
+            appBar: AppBar(
+              title:
+                  Text('Profile', style: Theme.of(context).textTheme.headline2),
+              leading: IconButton(
+                  onPressed: () {
+                    Provider.of<GoogleSignInProvider>(context, listen: false)
+                        .tapOnProfile(false);
+                    Navigator.of(context).pop();
+                  },
+                  icon: const Icon(Icons.arrow_back)),
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 16),
+                buildProfile(),
+                Expanded(child: buildMenu()),
+              ],
+            ),
+          );
   }
 
   Widget buildMenu() {
@@ -55,7 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ListTile(
           title: const Text('Log out'),
           onTap: () {
-            // TODO: Logout user
             Provider.of<GoogleSignInProvider>(context, listen: false).logout();
             // Provider.of<AppStateManager>(context, listen: false).logout();
             Navigator.of(context).pop();
@@ -73,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           const Text('Dark Mode'),
           Switch(
-            value: widget.customer.darkMode,
+            value: widget.darkmode,
             onChanged: (value) {
               Provider.of<GoogleSignInProvider>(context, listen: false)
                   .darkMode = value;
@@ -85,21 +100,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget buildProfile() {
-    var currentUser = widget.customer.user;
+    // var currentUser = widget.customer.user;
     return Column(
       children: [
         CircleImage(
             imageRadius: 60,
-            imageProvider: currentUser != null
-                ? NetworkImage(currentUser.photoURL!)
-                : null),
+            imageProvider: NetworkImage(user!.photoURL ??
+                'https://thumbs.dreamstime.com/z/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg')),
         // Text(currentUser != null ? currentUser.displayName! : 'User',
         //     style: Theme.of(context).textTheme.headline5),
         // Text(currentUser != null ? currentUser.email! : 'abc@example.com;',
         //     style: Theme.of(context).textTheme.headline5)
-        Text(currentUser!.displayName!,
+        Text(user!.displayName ?? 'User',
             style: Theme.of(context).textTheme.headline5),
-        Text(currentUser.email!, style: Theme.of(context).textTheme.headline5)
+        Text(user!.email ?? 'abc@example.com',
+            style: Theme.of(context).textTheme.headline5),
       ],
     );
   }

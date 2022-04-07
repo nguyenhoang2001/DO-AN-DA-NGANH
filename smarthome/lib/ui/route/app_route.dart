@@ -50,7 +50,7 @@ class AppRouter extends RouterDelegate
 
 // TODO: Add Profile Screen
         if (profileManager.didSelectUser)
-          ProfileScreen.page(profileManager.getCustomer),
+          ProfileScreen.page(profileManager.darkMode),
 // TODO: Add WebView Screen
         if (profileManager.didTapOnHCMUT) WebViewScreen.page()
       ],

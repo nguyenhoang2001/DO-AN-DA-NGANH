@@ -16,22 +16,33 @@ class GoogleSignInProvider extends ChangeNotifier {
   bool get darkMode => _darkMode;
 
   Future googleLogin() async {
-    final googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return;
-    _user = googleUser;
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    await FirebaseAuth.instance.signInWithCredential(credential);
-    notifyListeners();
+    final googleUser =
+        await googleSignIn.signIn().catchError((error) => print(error));
+    if (googleUser == null) {
+      return;
+    } else {
+      _user = googleUser;
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      notifyListeners();
+    }
   }
 
   Future logout() async {
-    googleSignIn.disconnect();
-    FirebaseAuth.instance.signOut();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user?.displayName != null) {
+      googleSignIn.disconnect();
+    }
+    await FirebaseAuth.instance.signOut();
     notifyListeners();
+  }
+
+  Future signOut() async {
+    FirebaseAuth.instance.signOut();
   }
 
   void set darkMode(bool darkMode) {
@@ -48,7 +59,4 @@ class GoogleSignInProvider extends ChangeNotifier {
     _didSelectUser = selected;
     notifyListeners();
   }
-
-  final user = FirebaseAuth.instance.currentUser;
-  Customer get getCustomer => Customer(darkMode: _darkMode, user: user);
 }
