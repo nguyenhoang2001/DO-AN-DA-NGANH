@@ -3,26 +3,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smarthome/ui/models/models.dart';
 import '../provider/google_sign_in.dart';
 import '../components/components.dart';
 import '../screens/screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+  static MaterialPage page() {
+    return MaterialPage(
+        child: const HomeScreen(),
+        name: ThermometerPage.loginPath,
+        key: ValueKey(ThermometerPage.loginPath));
+  }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // int _selectedTab = 0;
-  // List<Widget> pages = <Widget>[const ResetPassword(), const Register()];
-  // void _setPage(int index) {
-  //   setState(() {
-  //     _selectedTab = index;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<GoogleSignInProvider>(
@@ -49,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return const AuthPage();
               }
             },
-          ), //pages[_selectedTab],
+          ),
         );
       },
     );

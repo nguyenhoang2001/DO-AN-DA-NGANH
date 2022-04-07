@@ -20,29 +20,27 @@ class _SmartHomeState extends State<SmartHome> {
   @override
   void initState() {
     _portraitModeOnly();
+    super.initState();
   }
 
   @override
   void dispose() {
     _enableRotation();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          profileButton()
-        ],
+        actions: [profileButton()],
         elevation: 2.0,
         // backgroundColor: Colors.white,
         // foregroundColor: Colors.black,
         // centerTitle: true,
         title: const Text("Smart Home"),
       ),
-      body: Container(
-          child: TemperatureWidget()
-               ),
+      body: const TemperatureWidget(),
     );
   }
 
@@ -72,9 +70,12 @@ class _SmartHomeState extends State<SmartHome> {
         ),
         onTap: () {
           // TODO: home -> profile
-          // Provider.of<ProfileManager>(context, listen: false)
-          //     .tapOnProfile(true);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen(customer:Customer(darkMode: false, user: user))));
+          Provider.of<GoogleSignInProvider>(context, listen: false)
+              .tapOnProfile(true);
+          // Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //   return ProfileScreen(
+          //       customer: Customer(darkMode: false, user: user));
+          // }));
         },
       ),
     );

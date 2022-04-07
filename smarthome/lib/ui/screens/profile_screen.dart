@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:smarthome/ui/provider/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import '../provider/providers.dart';
 import '../models/models.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key, required this.customer}) : super(key: key);
   Customer customer;
+  static MaterialPage page(Customer user) {
+    return MaterialPage(
+        name: ThermometerPage.profilePath,
+        key: ValueKey(ThermometerPage.profilePath),
+        child: ProfileScreen(customer: user));
+  }
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -17,7 +23,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile', style: Theme.of(context).textTheme.headline2),
-        leading: IconButton(onPressed: ()=>Navigator.of(context).pop(), icon: const Icon(Icons.arrow_back)),
+        leading: IconButton(
+            onPressed: () =>
+                Provider.of<GoogleSignInProvider>(context, listen: false)
+                    .tapOnProfile(false),
+            icon: const Icon(Icons.arrow_back)),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -38,16 +48,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           title: const Text('View HCMUT Website!'),
           onTap: () {
             // TODO: Open raywenderlich.com webview
-            // Provider.of<ProfileManager>(context, listen: false)
-                // .tapOnRaywenderlich(true);
+            Provider.of<GoogleSignInProvider>(context, listen: false)
+                .tapOnHCMUT(true);
           },
         ),
         ListTile(
           title: const Text('Log out'),
           onTap: () {
             // TODO: Logout user
-            // Provider.of<AppStateManager>(context, listen: false).logout()
-            Provider.of<GoogleSignInProvider>(context,listen:false).logout();
+            Provider.of<GoogleSignInProvider>(context, listen: false).logout();
+            // Provider.of<AppStateManager>(context, listen: false).logout();
             Navigator.of(context).pop();
           },
         )
@@ -65,8 +75,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Switch(
             value: widget.customer.darkMode,
             onChanged: (value) {
-              // Provider.of<ProfileManager>(context, listen: false).darkMode =
-              //     value;
+              Provider.of<GoogleSignInProvider>(context, listen: false)
+                  .darkMode = value;
             },
           )
         ],
@@ -75,15 +85,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget buildProfile() {
+    var currentUser = widget.customer.user;
     return Column(
       children: [
         CircleImage(
             imageRadius: 60,
-            imageProvider: NetworkImage(widget.customer.user.photoURL!)),
-        Text(widget.customer.user.displayName!,
+            imageProvider: currentUser != null
+                ? NetworkImage(currentUser.photoURL!)
+                : null),
+        // Text(currentUser != null ? currentUser.displayName! : 'User',
+        //     style: Theme.of(context).textTheme.headline5),
+        // Text(currentUser != null ? currentUser.email! : 'abc@example.com;',
+        //     style: Theme.of(context).textTheme.headline5)
+        Text(currentUser!.displayName!,
             style: Theme.of(context).textTheme.headline5),
-        Text(widget.customer.user.email!,
-            style: Theme.of(context).textTheme.headline5)
+        Text(currentUser.email!, style: Theme.of(context).textTheme.headline5)
       ],
     );
   }

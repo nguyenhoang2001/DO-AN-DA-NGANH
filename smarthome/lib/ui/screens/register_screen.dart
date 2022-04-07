@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import '../../main.dart';
 import '../../utils/utils.dart';
+import 'screen.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key, required this.onClickedSignIn}) : super(key: key);
@@ -61,7 +62,7 @@ class _RegisterState extends State<Register> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.only(top: 60),
+                    padding: const EdgeInsets.only(top: 60),
                     child: const Text(
                       'REGISTER\n NOW',
                       textAlign: TextAlign.center,
@@ -300,9 +301,10 @@ class _RegisterState extends State<Register> {
           ),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.pushNamed(context, 'forgot');
-          },
+          onPressed: () =>
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return const ResetPassword();
+          })),
           child: const Text(
             'Forgot password?',
             style: TextStyle(color: Colors.black),
