@@ -4,12 +4,10 @@ import firebase_admin
 from datetime import datetime
 from firebase_admin import credentials, db
 
-
 # datetime object containing current date and time
 now = datetime.now()
 # dd/mm/YY H:M:S
 dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-
 
 cred = credentials.Certificate("smarthome-comeherebae-firebase-key.json")
 firebase_admin.initialize_app(cred, {
@@ -18,18 +16,6 @@ firebase_admin.initialize_app(cred, {
 
 temp = db.reference('/')
 
-# temp.set({
-#     'temperature': {
-#         'value': 24,
-#         'name': 'smart home',
-#         'date and time': '25/06/2021 07:58:56'
-#     },
-#     'pump':
-#         {
-#             'state': 0
-#         }
-#
-# })
 
 def getPort():
     ports = serial.tools.list_ports.comports()
@@ -54,21 +40,25 @@ pump = db.reference("pump")
 user = db.reference("user")
 fire = db.reference("fire")
 
+
 def processData(data):
     data = data.replace("!", "")
     data = data.replace("#", "")
     splitData = data.split(":")
-    print(splitData)
+    if (int(splitData[2]) <= 100 and int(splitData[2]) > 0):
+        print(splitData)
     try:
         if splitData[1] == "TEMP":
-            temp.update({
-                "value": int(splitData[2]),
-                "date and time": dt_string
-            })
+            if (int(splitData[2]) <= 100 and int(splitData[2]) > 0):
+                temp.update({
+                    "value": int(splitData[2]),
+                    "date and time": dt_string
+                })
             data_user = user.get()
             data_fire = fire.get()
+            print("state fire: " + str(data_fire["state"]))
             if data_user["userControl"] == 0:
-                if int(splitData[2]) > 36 or data_fire["state"] == 1:
+                if (int(splitData[2]) > 36 or data_fire["state"] == 1):
                     pump.update({
                         "state": 1
                     })
@@ -82,7 +72,7 @@ def processData(data):
                 data = pump.get()
                 ser.write((str(data["state"]) + "#").encode())
         else:
-            print("Undefined State")
+            print("Undefined Type")
     except Exception as e:
         print(e)
 
@@ -107,5 +97,8 @@ def readSerial():
 
 while True:
     if isMicrobitConnected:
-        readSerial()
+        try:
+            readSerial()
+        except Exception as e:
+            print(e)
     time.sleep(0.5)
