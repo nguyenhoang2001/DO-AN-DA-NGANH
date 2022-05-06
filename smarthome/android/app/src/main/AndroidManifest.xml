@@ -2,7 +2,7 @@
     package="com.comherebae.smarthome.smarthome">
    <application
         android:label="smarthome"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

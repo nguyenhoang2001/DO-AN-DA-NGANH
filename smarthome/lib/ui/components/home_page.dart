@@ -16,34 +16,37 @@ class SmartHome extends StatefulWidget {
 }
 
 class _SmartHomeState extends State<SmartHome> {
-  final user = FirebaseAuth.instance.currentUser!;
+  var user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     _portraitModeOnly();
+    super.initState();
   }
 
   @override
   void dispose() {
     _enableRotation();
+    if (user != null) {
+      user = null;
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          profileButton()
-        ],
-        elevation: 2.0,
-        // backgroundColor: Colors.white,
-        // foregroundColor: Colors.black,
-        // centerTitle: true,
-        title: const Text("Smart Home"),
-      ),
-      body: Container(
-          child: TemperatureWidget()
-               ),
-    );
+    return user == null
+        ? const AuthPage()
+        : Scaffold(
+            appBar: AppBar(
+              actions: [if (user != null) profileButton()],
+              elevation: 2.0,
+              // backgroundColor: Colors.white,
+              // foregroundColor: Colors.black,
+              // centerTitle: true,
+              title: const Text("Smart Home"),
+            ),
+            body: const TemperatureWidget(),
+          );
   }
 
   void _portraitModeOnly() {
@@ -68,13 +71,17 @@ class _SmartHomeState extends State<SmartHome> {
       child: GestureDetector(
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
-          backgroundImage: NetworkImage(user.photoURL!),
+          backgroundImage: NetworkImage(user!.photoURL ??
+              'https://thumbs.dreamstime.com/z/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg'), //user.photoURL??''
         ),
         onTap: () {
           // TODO: home -> profile
-          // Provider.of<ProfileManager>(context, listen: false)
-          //     .tapOnProfile(true);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen(customer:Customer(darkMode: false, user: user))));
+          Provider.of<GoogleSignInProvider>(context, listen: false)
+              .tapOnProfile(true);
+          // Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //   return ProfileScreen(
+          //       customer: Customer(darkMode: false, user: user));
+          // }));
         },
       ),
     );

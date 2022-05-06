@@ -88,10 +88,13 @@ class _ResetPasswordState extends State<ResetPassword> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        RichText(
-          text: TextSpan(
-            text: 'Register',
-            style: ThermometerTheme.lightTextTheme.bodyText1,
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text(
+            'Register',
+            style: TextStyle(color: Colors.black),
           ),
         ),
         TextButton(
@@ -99,7 +102,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             Navigator.pop(context);
           },
           child: const Text(
-            'LOGIN',
+            'Login',
             style: TextStyle(color: Colors.black),
           ),
         ),

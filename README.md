@@ -1,3 +1,7 @@
+<<<<<<< master
+# DO AN DA NGANH CNPM HK 212
+
+=======
 # Multidisciplinary-Project
 - Description: A Small Smarthome
 - Technologies: Flutter - Python MQTT Client
@@ -8,3 +12,4 @@
   - Trinh Manh Hung - Tensorflow Lite - fire detection
   - Nguyen Dinh Sang - HomePage UI + Realtime Database
 - Duration: 2 months
+>>>>>>> master
